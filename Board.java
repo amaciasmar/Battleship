@@ -3,6 +3,7 @@ public class Board {
 
     // this line creates an arraylist that contains arraylists, which will be our boards.
     private ArrayList<ArrayList<String>> board = new ArrayList<ArrayList<String>>();
+    private ArrayList<Ship> shipList = new ArrayList<Ship>();
     private int width;
     private int height;
     // if you want to access the square on the board that is 0 lines down (at the top) and
@@ -36,7 +37,7 @@ public class Board {
         for (int i = 0; i < board.get(0).size(); i++) {
             char index = 'a';
             index += i;
-            product +=(" " + index);
+            product += (" " + index);
         }
         product += "\n";
         for (int i = 0; i < board.size(); i++) {
@@ -107,10 +108,50 @@ public class Board {
         }
         return false;
     }
-    public int width() {
+
+    // returns the width value
+    public int getWidth() {
         return width;
     }
-    public int height() {
+
+    // returns the height value
+    public int getHeight() {
         return height;
+    }
+
+    // returns the ship list
+    public ArrayList<Ship> getShipList() {
+        return shipList;
+    }
+
+    // checks the board for any sunk ships, if it finds one, it will remove it from the ship list and return it.
+    // it can only remove one ship at a time (the last sunken one it finds,) so it's important to
+    // call this every time a shot is fired.
+    public Ship checkShips() {
+        int index = -1;
+        for (int i = 0; i < shipList.size(); i++) {
+            boolean sunk = true;
+            if(shipList.get(i).getHorizontal()) {
+                for (int j = 0; j < shipList.get(i).getLength(); j++) {
+                    if(get(shipList.get(i).getX() + j, shipList.get(i).getY()).equals("S")) {
+                        sunk = false;
+                    }
+                }
+            } else {
+                for (int j = 0; j < shipList.get(i).getLength(); j++) {
+                    if(get(shipList.get(i).getX(), shipList.get(i).getY() + j).equals("S")) {
+                        sunk = false;
+                    }
+                }
+            }
+            if (sunk) {
+                index = i;
+            }
+        }
+        if (index > 0) {
+            return shipList.remove(index);
+        } else {
+            return null;
+        }
     }
 }

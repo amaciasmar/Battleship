@@ -82,6 +82,7 @@ public class Board {
                 set(x, y + i, "S");
             }
         }
+        shipList.add(new Ship(x, y, length, horizontal));
     }
 
     // simulates incoming fire at (x, y). returns true if a ship was hit, returns false if not
@@ -148,7 +149,7 @@ public class Board {
                 index = i;
             }
         }
-        if (index > 0) {
+        if (index > -1) {
             return shipList.remove(index);
         } else {
             return null;

@@ -15,6 +15,7 @@ public class Battleship {
         enemy.addShip(7, 3, 4, false);
         enemy.addShip(1, 2, 5, true);
         Board enemyView = new Board(10, 10);
+        boolean sunkNotify = false;
         while (player.contains("S") && enemy.contains("S")) {
             System.out.println("------------------------------------------------------------------------");
             System.out.println("-OPPONENT-");
@@ -26,6 +27,10 @@ public class Battleship {
             int y;
             boolean check = false;
             while (!check) {
+                if(sunkNotify) {
+                    System.out.println("You sunk a battleship");
+                    sunkNotify = false;
+                }
                 System.out.println("Which column do you want to target?");
                 input = s.nextLine();
                 x = input.charAt(0) - 97;
@@ -41,7 +46,7 @@ public class Battleship {
                         enemyView.set(x, y, "X");
                         Ship sunk = enemy.checkShips();
                         if (sunk != null) {
-                            System.out.println("Bigdog");
+                            sunkNotify = true;
                             if(sunk.getHorizontal()) {
                                 for (int j = 0; j < sunk.getLength(); j++) {
                                     enemyView.set(sunk.getX() + j, sunk.getY(), "Z");

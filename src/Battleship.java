@@ -20,7 +20,6 @@ public class Battleship {
     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
 
-
     static Scanner s;
     static Board player, enemy, enemyView;
 
@@ -44,7 +43,6 @@ public class Battleship {
         enemy.addShip(0, 0, 2, true);
 
         enemyView = new Board(width, height);
-
 
         // the main game loop
         // the game should end when either side loses all its ships (represented by 'S')
@@ -75,13 +73,15 @@ public class Battleship {
         int x,y;
         boolean sunkNotify = false;
         while (!check) {
+
             x = r.nextInt(width);
             y = r.nextInt(height);
+
             if(player.get(x,y).contains("O") || player.get(x,y).contains("X")){
                 continue;
             } else {
                 if (player.hit(x, y)) {
-                    Ship sunk = enemy.checkShips();
+                    Ship sunk = player.checkShips();
                     if (sunk != null) {
                         if(sunk.getHorizontal()) {
                             for (int j = 0; j < sunk.getLength(); j++) {
@@ -95,7 +95,6 @@ public class Battleship {
                     }
                 }
                 check = true;
-
             }
         }
     }
@@ -113,12 +112,22 @@ public class Battleship {
                 System.out.println("You sunk a battleship");
                 sunkNotify = false;
             }
-            System.out.println(ANSI_CYAN+"Which column do you want to target?"+ANSI_RESET);
-            input = s.nextLine();
-            x = input.charAt(0) - 97;
-            System.out.println(ANSI_CYAN+"Which row do you want to target?"+ANSI_RESET);
-            input = s.nextLine();
-            y = input.charAt(0) - 97;
+            while(true){
+                System.out.println(ANSI_CYAN+"Which column do you want to target?"+ANSI_RESET);
+                input = s.nextLine();
+                if (input == "")
+                    continue;
+                x = input.charAt(0) - 97;
+                break;
+            }
+            while(true) {
+                System.out.println(ANSI_CYAN + "Which row do you want to target?" + ANSI_RESET);
+                input = s.nextLine();
+                if(input == "")
+                    continue;
+                y = input.charAt(0) - 97;
+                break;
+            }
             if (x < 0 || x > enemy.getWidth() - 1 || y < 0 || y > enemy.getHeight() - 1) {
                 System.out.println(ANSI_RED+"Invalid coordinates"+ANSI_RESET);
             }  else if (!enemy.get(x, y).contains("S") && !enemy.get(x, y).contains("-")) {

@@ -21,7 +21,7 @@ public class Board {
             for (int i = 0; i < h; i++) {
                 board.add(new ArrayList<String>());
                 for (int j = 0; j < w; j++) {
-                    board.get(i).add("-");
+                    board.get(i).add(Battleship.ANSI_BLUE+"-"+Battleship.ANSI_RESET);
                 }
             }
         } else {
@@ -75,11 +75,11 @@ public class Board {
     public void addShip(int x, int y, int length, boolean horizontal) {
         if (horizontal) {
             for (int i = 0; i < length; i ++) {
-                set(x + i, y, "S");
+                set(x + i, y, Battleship.ANSI_YELLOW+"S"+Battleship.ANSI_RESET);
             }
         } else {
             for (int i = 0; i < length; i ++) {
-                set(x, y + i, "S");
+                set(x, y + i, Battleship.ANSI_YELLOW+"S"+Battleship.ANSI_RESET);
             }
         }
         shipList.add(new Ship(x, y, length, horizontal));
@@ -89,8 +89,8 @@ public class Board {
     // we'll have to make sure you can't hit the same spot twice for this to work.
     // that should be easy though, just check for an "X" or "O" (capitalized!)
     public boolean hit(int x, int y) {
-        if (get(x, y).equals("S")) {
-            set(x, y, "X");
+        if (get(x, y).contains("S")) {
+            set(x, y, Battleship.ANSI_RED+"X"+Battleship.ANSI_RESET);
             return true;
         } else {
             set(x, y, "O");
@@ -102,7 +102,7 @@ public class Board {
     public boolean contains(String data) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (board.get(i).get(j).equals(data)) {
+                if (board.get(i).get(j).contains(data)) {
                     return true;
                 }
             }
@@ -134,13 +134,13 @@ public class Board {
             boolean sunk = true;
             if(shipList.get(i).getHorizontal()) {
                 for (int j = 0; j < shipList.get(i).getLength(); j++) {
-                    if(get(shipList.get(i).getX() + j, shipList.get(i).getY()).equals("S")) {
+                    if(get(shipList.get(i).getX() + j, shipList.get(i).getY()).contains("S")) {
                         sunk = false;
                     }
                 }
             } else {
                 for (int j = 0; j < shipList.get(i).getLength(); j++) {
-                    if(get(shipList.get(i).getX(), shipList.get(i).getY() + j).equals("S")) {
+                    if(get(shipList.get(i).getX(), shipList.get(i).getY() + j).contains("S")) {
                         sunk = false;
                     }
                 }

@@ -88,6 +88,13 @@ public class Board {
     // simulates incoming fire at (x, y). returns true if a ship was hit, returns false if not
     // we'll have to make sure you can't hit the same spot twice for this to work.
     // that should be easy though, just check for an "X" or "O" (capitalized!)
+
+    /**
+     *
+     * @param x
+     * @param y
+     * @return
+     */
     public boolean hit(int x, int y) {
         if (get(x, y).contains("S")) {
             set(x, y, Battleship.ANSI_RED+"X"+Battleship.ANSI_RESET);

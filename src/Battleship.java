@@ -28,13 +28,19 @@ public class Battleship {
 
     public static void main(String[] args) {
 
+        System.out.println("This is a game of battleship.");
+        System.out.println("Try to sink your opponent's ships before they can.");
+        System.out.println(" - represents water and x represents a part of a ship that's been hit.");
+        System.out.println("While a z represents when the whole ship has been sunk.");
+
         s = new Scanner(System.in);
         player = new Board(width, height);
-        player.addShip(0, 0, 2, true);
-        player.addShip(7, 1, 3, false);
-        player.addShip(2, 9, 3, true);
-        player.addShip(2, 3, 4, false);
-        player.addShip(4, 7, 5, true);
+        Customize();
+        //player.addShip(0, 0, 2, true);
+        //player.addShip(7, 1, 3, false);
+        //player.addShip(2, 9, 3, true);
+        //player.addShip(2, 3, 4, false);
+        //player.addShip(4, 7, 5, true);
         enemy = new Board(width, height);
         /*enemy.addShip(8, 9, 2, true);
         enemy.addShip(2, 6, 3, false);
@@ -64,7 +70,33 @@ public class Battleship {
         } else {
             System.out.println("You lose!");
         }
+    }
 
+    static void Customize() {
+        Scanner something = new Scanner(System.in);
+        System.out.println("How many ships would you like to have?");
+        int sa = something.nextInt();
+        for (int i = 0; i < sa; i++){
+            System.out.println("What x coordinate from 0-10 do you want your ship at?");
+            int x = something.nextInt();
+            System.out.println("What y coordinate from 0-10 do you want your ship at?");
+            int y = something.nextInt();
+            System.out.println("How long do you want your ship?");
+            int l = something.nextInt();
+             System.out.println("Would you like your ship to be horizontal or vertical?");
+            String hov = something.next();
+            boolean tf;
+            if (hov.equals("horizontal")|| hov.equals("Horizontal")) {
+                tf = true;
+            } else if (hov.equals("vertical")||hov.equals("Vertical")) {
+                tf = false;
+            } else {
+                System.out.println("please enter either horizontal or vertical.");
+                tf = false;
+                Customize();
+            }
+            player.addShip(x, y, l, tf);
+        }
     }
 
     static void enemyTurn(){

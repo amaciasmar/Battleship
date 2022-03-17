@@ -19,6 +19,7 @@ public class Battleship {
     public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
     public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
     public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+    public static ArrayList<Integer> shipInfo= new ArrayList<Integer>();
 
     static Scanner s;
     static Board player, enemy, enemyView;
@@ -26,15 +27,36 @@ public class Battleship {
     static int width = 10, height = 10;
 
     public static void main(String[] args) {
-
-        System.out.println("This is a game of battleship.");
-        System.out.println("Try to sink your opponent's ships before they can.");
-        System.out.println(" - represents water and x represents a part of a ship that's been hit.");
-        System.out.println("While a z represents when the whole ship has been sunk.");
-
+        shipInfo.add(5);
+        shipInfo.add(4);
+        shipInfo.add(3);
+        shipInfo.add(3);
+        shipInfo.add(2);
         s = new Scanner(System.in);
+        System.out.println("Welcome to Battleship. What would you like to do?\n 1. Play \n 2. View instructions\n 3. Customize");
+        boolean check = false;
+        while (!check) {
+            if(s.hasNextInt()){
+                int n = s.nextInt();
+                if (n == 1) {
+                    check = true;
+                } else if (n == 2) {
+                    System.out.println("This is a game of battleship.");
+                    System.out.println("Try to sink your opponent's ships before they can.");
+                    System.out.println(" \"-\" represents water, \"S\" represents part of a ship,\n \"O\" represents a missed shot, and \"X\" represents a part of a ship that's been hit.");
+                    System.out.println("Finally, a \"Z\" represents a whole ship that has been sunk.");
+                } else if (n == 3) {
+                    Customize();
+                } else {
+                    System.out.println("Invalid input");
+                }
+            } else {
+                s.next();
+                System.out.println("Invalid input");
+            }
+        }
+
         player = new Board(width, height);
-        Customize();
         //player.addShip(0, 0, 2, true);
         //player.addShip(7, 1, 3, false);
         //player.addShip(2, 9, 3, true);
@@ -52,6 +74,7 @@ public class Battleship {
 
         // the main game loop
         // the game should end when either side loses all its ships (represented by 'S')
+        placeShips();
         while (player.contains("S") && enemy.contains("S")) {
             System.out.println("------------------------------------------------------------------------");
             System.out.println("-OPPONENT-");
@@ -71,29 +94,87 @@ public class Battleship {
     }
 
     static void Customize() {
-        Scanner something = new Scanner(System.in);
-        System.out.println("How many ships would you like to have?");
-        int sa = something.nextInt();
-        for (int i = 0; i < sa; i++){
-            System.out.println("What x coordinate from 0-10 do you want your ship at?");
-            int x = something.nextInt();
-            System.out.println("What y coordinate from 0-10 do you want your ship at?");
-            int y = something.nextInt();
-            System.out.println("How long do you want your ship?");
-            int l = something.nextInt();
-             System.out.println("Would you like your ship to be horizontal or vertical?");
-            String hov = something.next();
-            boolean tf;
-            if (hov.equals("horizontal")|| hov.equals("Horizontal")) {
-                tf = true;
-            } else if (hov.equals("vertical")||hov.equals("Vertical")) {
-                tf = false;
+        System.out.println("What would you like to change?\n 1. Board size \n 2. Ships\n 3. Back to menu");
+        boolean check = false;
+        while (!check) {
+            if(s.hasNextInt()){
+                int n = s.nextInt();
+                if (n == 1) {
+                    boolean check0 = false;
+                    while (!check0) {
+                        int temp;
+                        System.out.println("How tall do you want your board to be? (From 1 to 30)");
+                        temp = checkInt(1, 30);
+                        height = temp;
+                        System.out.println("How wide do you want your board to be? (From 1 to 30)");
+                        temp = checkInt(1, 30);
+                        width = temp;
+                        int totalUnits = 0;
+                        for (int i = 0; i < shipInfo.size(); i++) {
+                            totalUnits += shipInfo.get(i);
+                        }
+                        if (totalUnits > (width * height / 2)) {
+                            System.out.println("Your ships can not take up more than half the board space!");
+                        } else {
+                            System.out.println("What would you like to change?\n 1. Board size \n 2. Ships\n 3. Back to menu");
+                            check0 = true;
+                        }
+                    }
+                } else if (n == 2) {
+                    boolean check0 = false;
+                    while (!check0) {
+                        shipInfo.clear();
+                        System.out.println("How many ships would you like to have?");
+                        int sa = 5;
+                        boolean check1 = false;
+                        while (!check1) {
+                            if (s.hasNextInt()) {
+                                sa = s.nextInt();
+                                check1 = true;
+                            } else {
+                                s.next();
+                                System.out.println("Invalid input");
+                            }
+                        }
+                        for (int i = 0; i < sa; i++){
+                            System.out.println("How long do you want ship #" + (i + 1) + " to be?");
+                            check1 = false;
+                            while (!check1) {
+                                if (s.hasNextInt()) {
+                                    int l = s.nextInt();
+                                    if (l >= height && l >= width) {
+                                        System.out.println("Your ship's length can not be bigger than both the width and height of your board.");
+                                    } else {
+                                        shipInfo.add(l);
+                                        check1 = true;
+                                    }
+                                } else {
+                                    s.next();
+                                    System.out.println("Invalid input");
+                                }
+                            }
+                        }
+                        int totalUnits = 0;
+                        for (int i = 0; i < shipInfo.size(); i++) {
+                            totalUnits += shipInfo.get(i);
+                        }
+                        if (totalUnits > (width * height / 2)) {
+                            System.out.println("Your ships can not take up more than half the board space!");
+                        } else {
+                            System.out.println("What would you like to change?\n 1. Board size \n 2. Ships\n 3. Back to menu");
+                            check0 = true;
+                        }
+                    }
+                } else if (n == 3) {
+                    System.out.println("Welcome to Battleship. What would you like to do?\n 1. Play \n 2. View instructions\n 3. Customize");
+                    check = true;
+                } else {
+                    System.out.println("Invalid input");
+                }
             } else {
-                System.out.println("please enter either horizontal or vertical.");
-                tf = false;
-                Customize();
+                s.next();
+                System.out.println("Invalid input");
             }
-            player.addShip(x, y, l, tf);
         }
     }
 
@@ -103,7 +184,6 @@ public class Battleship {
 
         boolean check = false;
         int x,y;
-        boolean sunkNotify = false;
         while (!check) {
 
             x = r.nextInt(width);
@@ -133,17 +213,12 @@ public class Battleship {
 
     static void playerTurn(){
 
-        boolean sunkNotify = false;
         String input;
         int x;
         int y;
 
         boolean check = false;
         while (!check) {
-            if(sunkNotify) {
-                System.out.println("You sunk a battleship");
-                sunkNotify = false;
-            }
             while(true){
                 System.out.println(ANSI_CYAN+"Which column do you want to target?"+ANSI_RESET);
                 input = s.nextLine();
@@ -169,7 +244,6 @@ public class Battleship {
                     enemyView.set(x, y, ANSI_RED+"X"+ANSI_RESET);
                     Ship sunk = enemy.checkShips();
                     if (sunk != null) {
-                        sunkNotify = true;
                         if(sunk.getHorizontal()) {
                             for (int j = 0; j < sunk.getLength(); j++) {
                                 enemyView.set(sunk.getX() + j, sunk.getY(), ANSI_RED+"Z"+ANSI_RESET);
@@ -185,6 +259,88 @@ public class Battleship {
                 }
                 check = true;
             }
+        }
+    }
+    public static int checkInt(int min, int max) {
+        int n = 0;
+        boolean check = false;
+        while (!check) {
+            if (s.hasNextInt()) {
+                n = s.nextInt();
+                if (n < min || n > max) {
+                    System.out.println("Invalid input");
+                } else {
+                    check = true;
+                }
+            } else {
+                s.next();
+                System.out.println("Invalid input");
+            }
+        }
+        return n;
+    }
+    public static void placeShips(){
+        for (int i = 0; i < shipInfo.size(); i++) {
+            String input;
+            int x = 0;
+            int y = 0;
+            boolean horizontal = true;
+            boolean check = false;
+            while (!check) {
+                check = true;
+                System.out.println(player);
+                System.out.println("Your current ship is of length " + shipInfo.get(i) + ",\nwhat column do you want the top / leftmost unit to be in?");
+                while(true){
+                    input = s.nextLine();
+                    if (input == "")
+                        continue;
+                    x = input.charAt(0) - 97;
+                    break;
+                }
+                System.out.println("what row do you want the top / leftmost unit to be in?");
+                while(true) {
+                    input = s.nextLine();
+                    if(input == "")
+                        continue;
+                    y = input.charAt(0) - 97;
+                    break;
+                }
+                System.out.println("Type \"1\" if you want the ship to be horizontal, or \"2\" if you want it to be vertical.");
+                int temp = checkInt(1, 2);
+                if (temp == 1) {
+                    horizontal = true;
+                } else {
+                    horizontal = false;
+                }
+                if (x < 0 || y < 0 || x >= width || y >= height) {
+                    check = false;
+                }
+                if (horizontal) {
+                    if (x + shipInfo.get(i) >= width) {
+                        check = false;
+                    } else {
+                        for (int j = 0; j < shipInfo.get(i); j++) {
+                            if (player.get(x + j, y).contains("S")) {
+                                check = false;
+                            }
+                        }
+                    }
+                } else  {
+                    if (y + shipInfo.get(i) >= height) {
+                        check = false;
+                    } else {
+                        for (int j = 0; j < shipInfo.get(i); j++) {
+                            if (player.get(x, y + j).contains("S")) {
+                                check = false;
+                            }
+                        }
+                    }
+                }
+                if (!check) {
+                    System.out.println("Invalid coordinates");
+                }
+            }
+            player.addShip(x, y, shipInfo.get(i), horizontal);
         }
     }
 }

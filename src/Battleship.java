@@ -45,6 +45,8 @@ public class Battleship {
                     System.out.println("Try to sink your opponent's ships before they can.");
                     System.out.println(" \"-\" represents water, \"S\" represents part of a ship,\n \"O\" represents a missed shot, and \"X\" represents a part of a ship that's been hit.");
                     System.out.println("Finally, a \"Z\" represents a whole ship that has been sunk.");
+                    System.out.println();
+                    System.out.println("What would you like to do?\n 1. Play \n 2. View instructions\n 3. Customize");
                 } else if (n == 3) {
                     Customize();
                 } else {
@@ -67,13 +69,12 @@ public class Battleship {
         enemy.addShip(2, 6, 3, false);
         enemy.addShip(5, 0, 3, true);
         enemy.addShip(7, 3, 4, false);*/
-        enemy.addShip(1, 2, 5, true);
-        enemy.addShip(0, 0, 2, true);
 
         enemyView = new Board(width, height);
 
         // the main game loop
         // the game should end when either side loses all its ships (represented by 'S')
+        enemyPlaceShips();
         placeShips();
         while (player.contains("S") && enemy.contains("S")) {
             System.out.println("------------------------------------------------------------------------");
@@ -90,6 +91,8 @@ public class Battleship {
             System.out.println("Congratulations, you've won the game!");
         } else {
             System.out.println("You lose!");
+            System.out.println("Opponent's board: ");
+            System.out.println(enemy);
         }
     }
 
@@ -178,23 +181,100 @@ public class Battleship {
         }
     }
 
+    public static int[] firstHit = {-1, -1};
+    public static int[] secondHit = {-1, -1};
+
     static void enemyTurn(){
 
         Random r = new Random();
 
         boolean check = false;
-        int x,y;
+        int x = 0,y = 0;
         while (!check) {
 
-            x = r.nextInt(width);
-            y = r.nextInt(height);
+            boolean check1 = false;
+            while (!check1) {
+                check1 = true;
+                if (firstHit[0] > -1) {
+                    if (secondHit[0] > -1) {
+                        if (firstHit[0] < secondHit[0]) {
+                            if (secondHit[0] + 1 >= width) {
+                                secondHit[0] = -1;
+                                secondHit[1] = -1;
+                                check1 = false;
+                            } else {
+                                x = secondHit[0] + 1;
+                                y = secondHit[1];
+                            }
+                        } else if (firstHit[0] > secondHit[0]){
+                            if (secondHit[0] - 1 < 0) {
+                                secondHit[0] = -1;
+                                secondHit[1] = -1;
+                                check1 = false;
+                            } else {
+                                x = secondHit[0] - 1;
+                                y = secondHit[1];
+                            }
+                        } else if (firstHit[1] < secondHit[1]) {
+                            if (secondHit[1] + 1 >= height) {
+                                secondHit[0] = -1;
+                                secondHit[1] = -1;
+                                check1 = false;
+                            } else {
+                                x = secondHit[0];
+                                y = secondHit[1] + 1;
+                            }
+                        } else{
+                            if (secondHit[1] - 1 < 0) {
+                                secondHit[0] = -1;
+                                secondHit[1] = -1;
+                                check1 = false;
+                            } else {
+                                x = secondHit[0];
+                                y = secondHit[1] - 1;
+                            }
+                        }
+                    } else {
+                        int direction = r.nextInt(4);
+                        if (direction == 0) {
+                            x = firstHit[0] + 1;
+                            y= firstHit[1];
+                        } else if (direction == 1) {
+                            x = firstHit[0] - 1;
+                            y= firstHit[1];
+                        } else if (direction == 2) {
+                            x = firstHit[0];
+                            y= firstHit[1] + 1;
+                        } else {
+                            x = firstHit[0];
+                            y= firstHit[1] - 1;
+                        }
+                    }
+                } else {
+                    x = r.nextInt(width);
+                    y = r.nextInt(height);
+                }
 
-            if(player.get(x,y).contains("O") || player.get(x,y).contains("X")){
+            }
+
+            if(player.get(x,y).contains("O") || player.get(x,y).contains("X") || player.get(x,y).contains("Z") || x < 0 || x >= width || y < 0 || y >= height){
                 continue;
             } else {
                 if (player.hit(x, y)) {
+                    if (firstHit[0] < 0) {
+                        firstHit[0] = x;
+                        firstHit[1] = y;
+                    } else {
+                        secondHit[0] = x;
+                        secondHit[1] = y;
+                    }
+
                     Ship sunk = player.checkShips();
                     if (sunk != null) {
+                        firstHit[0] = -1;
+                        firstHit[1] = -1;
+                        secondHit[0] = -1;
+                        secondHit[1] = -1;
                         if(sunk.getHorizontal()) {
                             for (int j = 0; j < sunk.getLength(); j++) {
                                 player.set(sunk.getX() + j, sunk.getY(), ANSI_RED+"Z"+ANSI_RESET);
@@ -205,14 +285,17 @@ public class Battleship {
                             }
                         }
                     }
+                } else {
+                    secondHit[0] = -1;
+                    secondHit[1] = -1;
                 }
                 check = true;
             }
         }
     }
 
+    public static boolean whyIsItPrintingWhichColumnTwice = false;
     static void playerTurn(){
-
         String input;
         int x;
         int y;
@@ -220,7 +303,10 @@ public class Battleship {
         boolean check = false;
         while (!check) {
             while(true){
-                System.out.println(ANSI_CYAN+"Which column do you want to target?"+ANSI_RESET);
+                if (whyIsItPrintingWhichColumnTwice) {
+                    System.out.println(ANSI_CYAN+"Which column do you want to target?"+ANSI_RESET);
+                }
+                whyIsItPrintingWhichColumnTwice = true;
                 input = s.nextLine();
                 if (input == "")
                     continue;
@@ -316,7 +402,7 @@ public class Battleship {
                     check = false;
                 }
                 if (horizontal) {
-                    if (x + shipInfo.get(i) >= width) {
+                    if (x + shipInfo.get(i) > width) {
                         check = false;
                     } else {
                         for (int j = 0; j < shipInfo.get(i); j++) {
@@ -326,7 +412,7 @@ public class Battleship {
                         }
                     }
                 } else  {
-                    if (y + shipInfo.get(i) >= height) {
+                    if (y + shipInfo.get(i) > height) {
                         check = false;
                     } else {
                         for (int j = 0; j < shipInfo.get(i); j++) {
@@ -341,6 +427,38 @@ public class Battleship {
                 }
             }
             player.addShip(x, y, shipInfo.get(i), horizontal);
+        }
+    }
+    public static void enemyPlaceShips(){
+        Random r = new Random();
+        for (int i = 0; i < shipInfo.size(); i++) {
+            String input;
+            int x = 0;
+            int y = 0;
+            boolean horizontal = true;
+            boolean check = false;
+            while (!check) {
+                check = true;
+                horizontal = r.nextBoolean();
+                if (horizontal) {
+                    x = r.nextInt(width - shipInfo.get(i));
+                    y = r.nextInt(height);
+                    for (int j = 0; j < shipInfo.get(i); j++) {
+                        if (enemy.get(x + j, y).contains("S")) {
+                            check = false;
+                        }
+                    }
+                } else {
+                    x = r.nextInt(width);
+                    y = r.nextInt(height - shipInfo.get(i));
+                    for (int j = 0; j < shipInfo.get(i); j++) {
+                        if (enemy.get(x, y + j).contains("S")) {
+                            check = false;
+                        }
+                    }
+                }
+            }
+            enemy.addShip(x, y, shipInfo.get(i), horizontal);
         }
     }
 }

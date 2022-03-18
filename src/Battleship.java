@@ -191,6 +191,7 @@ public class Battleship {
         boolean check = false;
         int x = 0,y = 0;
         while (!check) {
+            int loopStopper = 0;
 
             boolean check1 = false;
             while (!check1) {
@@ -198,7 +199,7 @@ public class Battleship {
                 if (firstHit[0] > -1) {
                     if (secondHit[0] > -1) {
                         if (firstHit[0] < secondHit[0]) {
-                            if (secondHit[0] + 1 >= width) {
+                            if (secondHit[0] + 1 >= width || player.get(secondHit[0] + 1, secondHit[1]).equals("X") || player.get(secondHit[0] + 1, secondHit[1]).equals("O")) {
                                 secondHit[0] = -1;
                                 secondHit[1] = -1;
                                 check1 = false;
@@ -207,7 +208,7 @@ public class Battleship {
                                 y = secondHit[1];
                             }
                         } else if (firstHit[0] > secondHit[0]){
-                            if (secondHit[0] - 1 < 0) {
+                            if (secondHit[0] - 1 < 0 || player.get(secondHit[0] - 1, secondHit[1]).equals("X") || player.get(secondHit[0] - 1, secondHit[1]).equals("O")) {
                                 secondHit[0] = -1;
                                 secondHit[1] = -1;
                                 check1 = false;
@@ -216,7 +217,7 @@ public class Battleship {
                                 y = secondHit[1];
                             }
                         } else if (firstHit[1] < secondHit[1]) {
-                            if (secondHit[1] + 1 >= height) {
+                            if (secondHit[1] + 1 >= height || player.get(secondHit[0], secondHit[1] + 1).equals("X") || player.get(secondHit[0], secondHit[1] + 1).equals("O")) {
                                 secondHit[0] = -1;
                                 secondHit[1] = -1;
                                 check1 = false;
@@ -225,7 +226,7 @@ public class Battleship {
                                 y = secondHit[1] + 1;
                             }
                         } else{
-                            if (secondHit[1] - 1 < 0) {
+                            if (secondHit[1] - 1 < 0 || player.get(secondHit[0], secondHit[1] - 1).equals("X") || player.get(secondHit[0], secondHit[1] - 1).equals("O")) {
                                 secondHit[0] = -1;
                                 secondHit[1] = -1;
                                 check1 = false;
